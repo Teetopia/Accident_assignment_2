@@ -54,6 +54,7 @@ def merge_road():
     merged.to_csv("merged_road_surface.csv", index=False)
 
     return
+
 def merge_accident():
 
     merge_atmosphere()
@@ -70,8 +71,9 @@ def merge_accident():
         merged_accident['SURFACE_COND_DESC'].notna()
     ]
 
+    merged_accident['SEVERITY'] = merged_accident['SEVERITY'].apply(lambda x: 5 - x)
+
     merged_accident.to_csv("merged_accident.csv", index=False)
     return
-
 
 merge_accident()
