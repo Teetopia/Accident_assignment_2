@@ -48,7 +48,7 @@ def separate_data(X, y):
 
 def try_ks(X_train, y_train, X_val, y_val):
 
-    k_vals = [1, 3, 5, 10, 100, 500, 1000]
+    k_vals = range(1, 10)
     accuracies = []
     f1_scores = []
 
@@ -68,22 +68,6 @@ def try_ks(X_train, y_train, X_val, y_val):
     try_ks = k_vals[f1_scores.index(best_f1)]
     best_accuracy = accuracies[f1_scores.index(best_f1)]
     print(f'Best k value: {try_ks}, F1 Score: {best_f1:.4f}, Accuracy: {best_accuracy:.4f}')
-
-
-
-
-    # # plot the results
-    # plt.figure(figsize=(10, 5))
-    # plt.plot(k_vals, accuracies, marker='o', color='blue', label='Accuracy')
-    # # plt.plot(k_vals, f1_scores, marker='o', color='red', label='F1 Score')
-    # plt.title('KNN Model Performance')
-    # plt.xlabel('k value')
-    # plt.ylabel('Score')
-    # plt.xticks(k_vals)
-    # plt.legend()
-    # plt.grid()
-    # plt.savefig('knn_performance.png')
-    # plt.show()
 
 def best_k(X_train, y_train):
     # Method 1: oversample the minority class
@@ -136,14 +120,25 @@ def main():
     X = data[Xcol]
     y = data['SEVERITY']
 
-    print(y.value_counts())
-
     # separate data into training and testing sets
     # do not touch the test set
     X_train, X_test, y_train, y_test = separate_data(X, y)
 
     # determine best k using the training set
-    best_k(X_train, y_train)
+    # best_k(X_train, y_train)
+    # from the result, k=5 is chosen as it has the best f1 score given similar accuracy
+
+    # train the KNN model with the best k value on the entire training set
+    k = 5
+    knn = KNN(n_neighbors=k)
+    knn.fit(X_train, y_train)
+
+    # run the model on the test set
+    y_pred = knn.predict(X_test)
+
+    # make clas
+
+
 
     
     return
