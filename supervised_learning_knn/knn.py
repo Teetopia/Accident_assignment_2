@@ -24,23 +24,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import RandomOverSampler
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 
 
-def separate_data(X, y):
+
+def separate_data(X, y, ncols):
     '''
-    takes in pandas series of feature X and label y
+    takes in feature X and label y
     returns the training and testing sets in form of nparrays
     '''
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=17, stratify=y)
 
-    X_train = np.asarray(X_train).reshape(-1, 1)
-    X_test = np.asarray(X_test).reshape(-1, 1)
+    # if X is only one column, convert it to a 2D array
+    if ncols == 1:
+        X_train = np.asarray(X_train).reshape(-1, 1)
+        X_test = np.asarray(X_test).reshape(-1, 1)
+    else:
+        X_train = np.asarray(X_train)
+        X_test = np.asarray(X_test)
     y_train = np.asarray(y_train)
     y_test = np.asarray(y_test)
 
@@ -48,7 +54,7 @@ def separate_data(X, y):
 
 def try_ks(X_train, y_train, X_val, y_val):
 
-    k_vals = range(1, 10)
+    k_vals = range(1, 6)
     accuracies = []
     f1_scores = []
 
@@ -69,18 +75,18 @@ def try_ks(X_train, y_train, X_val, y_val):
     best_accuracy = accuracies[f1_scores.index(best_f1)]
     print(f'Best k value: {try_ks}, F1 Score: {best_f1:.4f}, Accuracy: {best_accuracy:.4f}')
 
-def best_k(X_train, y_train):
+def best_k(X_train, y_train, ncols):
     # Method 1: oversample the minority class
     # oversample the minority class
     ros = RandomOverSampler(random_state=17)
-    X_train_os, y_train_os = ros.fit_resample(np.asarray(X_train).reshape(-1, 1), np.asarray(y_train))
+    X_train_os, y_train_os = ros.fit_resample(X_train, y_train)
 
     # separate the oversampled data into training and validation sets
-    X_train_os, X_val_os, y_train_os, y_val_os = separate_data(pd.Series(X_train_os.flatten()), pd.Series(y_train_os.flatten()))
+    X_train_os, X_val_os, y_train_os, y_val_os = separate_data(X_train_os, y_train_os, ncols)
 
     # Method 2: keep test set as is
     # separate the training data into training and validation sets
-    X_train, X_val, y_train, y_val = separate_data(X_train, y_train)
+    X_train, X_val, y_train, y_val = separate_data(X_train, y_train, ncols)
 
     # standardize the data
     scaler = StandardScaler().fit(X_train)
@@ -107,49 +113,54 @@ def main():
     data = pd.read_csv('merged_accident.csv')
 
     # only keep columns of interest
-    Xcol = input("Please enter the condition you want to use (s for surface/ a for atmosphere): ")
+    Xcol = input("Please enter the condition you want to use (s for surface/ a for atmosphere/ b for both): ")
     if Xcol == 's':
-        Xcol = 'SURFACE_INDEX'
+        Xcol = ['SURFACE_INDEX']
         data = data[['SURFACE_INDEX', 'SEVERITY']]
     elif Xcol == 'a':
-        Xcol = 'ATMOSPH_INDEX'
+        Xcol = ['ATMOSPH_INDEX']
         data = data[['ATMOSPH_INDEX', 'SEVERITY']]
+    elif Xcol == 'b':
+        Xcol = ['SURFACE_INDEX', 'ATMOSPH_INDEX']
+        data = data[['SURFACE_INDEX', 'ATMOSPH_INDEX', 'SEVERITY']]
     else:
         print("Invalid condition. Please enter either 's' or 'a'.")
 
     X = data[Xcol]
     y = data['SEVERITY']
+    ncols = len(Xcol)
+
+    # print values of y
+    print(f'Values of y: {y.value_counts()}')
 
     # separate data into training and testing sets
     # do not touch the test set
-    X_train, X_test, y_train, y_test = separate_data(X, y)
+    X_train, X_test, y_train, y_test = separate_data(X, y, ncols)
 
     # determine best k using the training set
-    # best_k(X_train, y_train)
+    # best_k(X_train, y_train, ncols)
     # from the result, k=5 is chosen as it has the best f1 score given similar accuracy
 
     # train the KNN model with the best k value on the entire training set
-    k = 5
+    k = 3
     knn = KNN(n_neighbors=k)
     knn.fit(X_train, y_train)
 
     # run the model on the test set
     y_pred = knn.predict(X_test)
 
-    # make clas
+    # produce the classification report
+    print(classification_report(y_test, y_pred, zero_division=0))
 
+    # plot the confusion matrix
+    cm = confusion_matrix(y_test, y_pred, labels=[1, 2, 3, 4])
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[1, 2, 3, 4])
 
+    disp.plot()
+    plt.title(f'Confusion Matrix for k={k}')
+    plt.savefig(f'confusion_matrix_k={k}_{Xcol}.png')
 
-    
     return
 
 main()
-
-print("made some changes")
-
-
-
-
-
-
 
