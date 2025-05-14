@@ -93,19 +93,40 @@ y_test = test['SEVERITY']
 
 # See what happens when imbalance is not accounted for at all
 # Get optimal depth 
-optimal_depth_imbal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = False)
+# optimal_depth_imbal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = False)
 
-# Train and test
-train_and_test(X_train, y_train, X_test, y_test, optimal_depth_imbal, imbalance_adjusted = False)
+# # Train and test
+# train_and_test(X_train, y_train, X_test, y_test, optimal_depth_imbal, imbalance_adjusted = False)
 
-# Now account for imbalance and run again
-# Get optimal depth
-optimal_depth_bal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = True)
+# # Now account for imbalance and run again
+# # Get optimal depth
+# optimal_depth_bal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = True)
 
-# Train and test
-train_and_test(X_train, y_train, X_test, y_test, optimal_depth_bal, imbalance_adjusted = True)
+# # Train and test
+# train_and_test(X_train, y_train, X_test, y_test, optimal_depth_bal, imbalance_adjusted = True)
 
 ##################
 
 # See what happens when there is only one independent variable tested at a time
+atm_X_train_subset = train[['ATMOSPH_INDEX']]
 
+atm_X_validation = validation[['ATMOSPH_INDEX']]
+
+atm_X_train = train[['ATMOSPH_INDEX']]
+
+atm_X_test = test[['ATMOSPH_INDEX']]
+
+
+# See what happens when imbalance is not accounted for at all
+# Get optimal depth 
+atm_optimal_depth_imbal = get_depth(atm_X_train_subset, y_train_subset, atm_X_validation, y_validation, imbalance_adjusted = False)
+
+# Train and test
+train_and_test(atm_X_train, y_train, atm_X_test, y_test, atm_optimal_depth_imbal, imbalance_adjusted = False)
+
+# Now account for imbalance and run again
+# Get optimal depth
+atm_optimal_depth_bal = get_depth(atm_X_train_subset, y_train_subset, atm_X_validation, y_validation, imbalance_adjusted = True)
+
+# Train and test
+train_and_test(atm_X_train, y_train, atm_X_test, y_test, atm_optimal_depth_bal, imbalance_adjusted = True)
