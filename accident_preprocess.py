@@ -22,8 +22,19 @@ road_level = {
 def get_avg_index(desc, level):
     conditions = [c.strip() for c in desc.split(',')]
     indices = [level.get(cond, None) for cond in conditions]
-    indices = [i for i in indices if i is not None] 
-    return round(sum(indices) / len(indices), 2) if indices else None
+    
+    valid = [(i, idx) for idx, i in enumerate(indices) if i is not None]
+    
+    if not valid:
+        return None
+
+    weights = [idx + 1 for _, idx in valid]
+    values = [i for i, _ in valid]
+
+    weighted_sum = sum(v * w for v, w in zip(values, weights))
+    total_weight = sum(weights)
+
+    return round(weighted_sum / total_weight, 2)
 
 def get_severity_index(row):
     if row['NO_PERSONS_KILLED'] >= 1:
