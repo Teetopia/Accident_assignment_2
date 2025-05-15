@@ -8,9 +8,53 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import f1_score
+
+def get_acc_comparison(X_train, y_train, X_val, y_val):
+    depths = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    acc_macro = []
+    acc_weighted = []
+
+    for depth in depths:
+        # Case 1: No imbalance adjustment
+        d_tree_macro = DecisionTreeClassifier(criterion='entropy', max_depth=depth, class_weight=None)
+        d_tree_macro.fit(X_train, y_train)
+        y_pred_macro = d_tree_macro.predict(X_val)
+        acc_macro_score = accuracy_score(y_val, y_pred_macro)
+        acc_macro.append(acc_macro_score)
+
+        # Case 2: With imbalance adjustment
+        d_tree_weighted = DecisionTreeClassifier(criterion='entropy', max_depth=depth, class_weight='balanced')
+        d_tree_weighted.fit(X_train, y_train)
+        y_pred_weighted = d_tree_weighted.predict(X_val)
+        acc_weighted_score = accuracy_score(y_val, y_pred_weighted)
+        acc_weighted.append(acc_weighted_score)
+
+    # Print best scores
+    best_macro = max(acc_macro)
+    best_macro_depth = depths[acc_macro.index(best_macro)]
+    best_weighted = max(acc_weighted)
+    best_weighted_depth = depths[acc_weighted.index(best_weighted)]
+
+    print(f"\nMax macro accuracy score: {best_macro:.4f} at depth {best_macro_depth}")
+    print(f"Max weighted accuracy score: {best_weighted:.4f} at depth {best_weighted_depth}\n")
+
+    # Plot both lines
+    plt.plot(depths, acc_macro, label='Macro Avg (No Weight)', marker='o')
+    plt.plot(depths, acc_weighted, label='Weighted Avg (Balanced)', marker='s')
+    plt.xlabel('Max Depth')
+    plt.ylabel('Accuracy Score')
+    plt.title('Accuracy Score vs Tree Depth')
+    plt.xticks(depths)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 # Helper functions
 def get_depth(X_train, y_train, X_val, y_val, imbalance_adjusted):
-    depths = list(range(1,10))
+    depths = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     f1_list = []
 
     for depth in depths:
@@ -34,7 +78,7 @@ def get_depth(X_train, y_train, X_val, y_val, imbalance_adjusted):
     plt.grid(True)
     plt.show()   
     
-    return optimal_depth
+#     return optimal_depth
 
 def train_and_test(X_train, y_train, X_test, y_test, depth, imbalance_adjusted):
     dt_model = DecisionTreeClassifier(criterion = 'entropy', max_depth = depth, class_weight= None if not imbalance_adjusted else 'balanced')
@@ -72,8 +116,6 @@ def train_and_test(X_train, y_train, X_test, y_test, depth, imbalance_adjusted):
 # read merged_accident.csv
 merged_df = pd.read_csv('merged_accident.csv')
 
-merged_df['SEVERITY'] = merged_df['SEVERITY'].apply(lambda x: 5 - x)
-
 # Split using stratified sampling
 train, test = train_test_split(merged_df, test_size =0.2, stratify = merged_df['SEVERITY'], random_state=42)    
 
@@ -93,17 +135,16 @@ y_test = test['SEVERITY']
 
 # See what happens when imbalance is not accounted for at all
 # Get optimal depth 
-# optimal_depth_imbal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = False)
+optimal_depth_imbal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = False)
+# Train and test
+train_and_test(X_train, y_train, X_test, y_test, optimal_depth_imbal, imbalance_adjusted = False)
 
-# # Train and test
-# train_and_test(X_train, y_train, X_test, y_test, optimal_depth_imbal, imbalance_adjusted = False)
+# Now account for imbalance and run again
+# Get optimal depth
+optimal_depth_bal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = True)
 
-# # Now account for imbalance and run again
-# # Get optimal depth
-# optimal_depth_bal = get_depth(X_train_subset, y_train_subset, X_validation, y_validation, imbalance_adjusted = True)
-
-# # Train and test
-# train_and_test(X_train, y_train, X_test, y_test, optimal_depth_bal, imbalance_adjusted = True)
+# Train and test
+train_and_test(X_train, y_train, X_test, y_test, optimal_depth_bal, imbalance_adjusted = True)
 
 ##################
 
