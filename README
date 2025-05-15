@@ -1,1 +1,6 @@
-Test
+knn.py
+- use the bestk() function to determine optimal k value and plot graphs for range of k values
+- comment the line out when optimal k is found
+- input the k value into the code to train model with that k value
+- run the main function to get confusion matrix of results
+
