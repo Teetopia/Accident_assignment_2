@@ -159,33 +159,46 @@ def main():
     y = data['SEVERITY']
     ncols = len(Xcol)
 
-    print(y.value_counts())
+    # print(y.value_counts())
+
     # separate data into training and testing sets
     # do not touch the test set
     X_train, X_test, y_train, y_test = separate_data(X, y, ncols)
 
+    # standardize the data
+    scaler = StandardScaler().fit(X_train)
+    X_train = scaler.transform(X_train)
+
+    # y_train = pd.Series(y_train)
+    # y_test = pd.Series(y_test)
+    # print('Training set:')
+    # print(y_train.value_counts())
+    # print('Testing set:')
+    # print(y_test.value_counts())
+
     # determine best k using the training set
-    best_k(X_train, y_train, ncols)
+    # best_k(X_train, y_train, ncols)
     # from the result, k=5 is chosen as it has the best f1 score given similar accuracy
 
     # train the KNN model with the best k value on the entire training set
-    # k = 3
-    # knn = KNN(n_neighbors=k)
-    # knn.fit(X_train, y_train)
+    k = 50
+    knn = KNN(n_neighbors=k)
+    knn.fit(X_train, y_train)
 
-    # # run the model on the test set
-    # y_pred = knn.predict(X_test)
+    # run the model on the test set
+    y_pred = knn.predict(X_test)
 
-    # # produce the classification report
-    # print(classification_report(y_test, y_pred, zero_division=0))
+    # print the classification report for the model
+    print(f'Classification report for k={k}:\n')
+    print(classification_report(y_test, y_pred, zero_division=0))
 
-    # # plot the confusion matrix
-    # cm = confusion_matrix(y_test, y_pred, labels=[1, 2, 3, 4])
-    # disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[1, 2, 3, 4])
+    # plot the confusion matrix
+    cm = confusion_matrix(y_test, y_pred, labels=[1, 2, 3, 4])
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[1, 2, 3, 4])
 
-    # disp.plot()
-    # plt.title(f'Confusion Matrix for k={k}')
-    # plt.savefig(f'confusion_matrix_k={k}_{Xcol}.png')
+    disp.plot()
+    plt.title(f'K-NN Model Confusion Matrix (k={k})\n')
+    plt.savefig(f'confusion_matrix_k={k}_{Xcol}.png')
 
     return
 
