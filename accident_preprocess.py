@@ -47,6 +47,12 @@ def get_severity_index(row):
         return 100
     else:
         return 0
+
+# def get_severity_index(row):
+#     killed_weight = 50
+#     serious_injury_weight = 5
+#     minor_injury_weight = 1
+#     return  row['NO_PERSONS_KILLED'] * killed_weight  + row['NO_PERSONS_INJ_2'] * serious_injury_weight  +  row['NO_PERSONS_INJ_3'] * minor_injury_weight
     
 def handle_severity(row):
     if row['NO_PERSONS_KILLED'] >= 1:
@@ -60,11 +66,7 @@ def handle_severity(row):
     else:
         return 0 
 
-# def get_severity_index(row):
-#     killed_weight = 1000
-#     serious_injury_weight = 10
-#     minor_injury_weight = 1
-#     return  row['NO_PERSONS_KILLED'] * killed_weight  + row['NO_PERSONS_INJ_2'] * serious_injury_weight  +  row['NO_PERSONS_INJ_3'] * minor_injury_weight
+
 
 def merge_atmosphere():
     atmosphere = pd.read_csv('atmospheric_cond.csv')

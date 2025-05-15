@@ -1,13 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 from sklearn.linear_model import LinearRegression
 
 accident = pd.read_csv('merged_accident.csv')
 
 def heat_map():
-    
-    sns.heatmap(accident[['SEVERITY_INDEX', 'ATMOSPH_INDEX', 'SURFACE_INDEX']].corr(),annot=True)
+    print(accident[['SEVERITY_INDEX', 'ATMOSPH_INDEX', 'SURFACE_INDEX']].corr(method = 'spearman'))
+    sns.heatmap(accident[['SEVERITY_INDEX', 'ATMOSPH_INDEX', 'SURFACE_INDEX']].corr(method = 'spearman'),annot=True, annot_kws={"size": 24})
+    plt.yticks(rotation=0)
+    plt.show()
+
+    print(accident[['SEVERITY_INDEX', 'ATMOSPH_INDEX', 'SURFACE_INDEX']].corr())
+    sns.heatmap(accident[['SEVERITY_INDEX', 'ATMOSPH_INDEX', 'SURFACE_INDEX']].corr(),annot=True, annot_kws={"size": 24})
     plt.yticks(rotation=0)
     plt.show()
 
