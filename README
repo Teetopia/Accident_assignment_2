@@ -1,3 +1,11 @@
+decisiontree.py
+- use get_depth_comparison() to plot a graph comaparing F1 scores for various tree depths (with without class balancing)
+- comment out line when ideal maximum possible depth is found.
+- use get_depth() function to find optimal depth for decision tree
+- input optimal depth into train_and_test() to train and evaluate final model.
+- run the full script to view the decision tree, confusion matrix, f1 score and accuracy for both train and test sets,
+  and classification reports for both training and test sets
+
 knn.py
 - use the bestk() function to determine optimal k value and plot graphs for range of k values
 - comment the line out when optimal k is found
