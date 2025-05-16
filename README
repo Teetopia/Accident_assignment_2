@@ -12,3 +12,18 @@ knn.py
 - input the k value into the code to train model with that k value
 - run the main function to get confusion matrix of results
 
+accident_preprocess.py
+- comment out severity index measure method
+- call each merge function for the 2 dataset to merged the entries into unique ACCIDENT_NO
+- call merge_accident to merge both dataset into accident dataset 
+- dropping all entire entry with Not Known or Invalid value
+
+accident_correlation.py
+- call heat_map() function to find the correlation of these 3 column using corr() function from pandas dataframe
+- use both Pearson's and Spearman's method
+- comment out Linear Regression as the data distribution is not quite linear
+
+accident_nmi.py
+- assign bin to atmosphere and road surface using KBinsDiscretizer
+- call NMI function (as learn in the workshop) to find the Normalised Mutual Information
+- print out the correlation for the 3 pair of data

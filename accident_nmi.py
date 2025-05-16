@@ -11,19 +11,24 @@ equal_width = KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='uniform')
 # a transformed version of 
 accident['ATMOSPH_BIN'] = equal_width.fit_transform(accident[['ATMOSPH_INDEX']]).astype(int)
 accident['SURFACE_BIN'] = equal_width.fit_transform(accident[['SURFACE_INDEX']]).astype(int)
+
+# SEVRITY is already a range of 1-4 so -1 to make it inline with other bins
 accident['SEVERITY_BIN'] = accident['SEVERITY'] - 1
 
 accident.hist(column=['ATMOSPH_BIN', 'SEVERITY_BIN', 'SURFACE_BIN'], bins=4)
 plt.show()
 
+# Calculate probaility
 def compute_probability(col):
     return col.value_counts() / col.shape[0]
 
+# Calculate Entropy
 def compute_entropy(col):
     probabilities = compute_probability(col)
     entropy = -sum(probabilities * np.log2(probabilities))
     return entropy
 
+# Calculate H(Y|X)
 def compute_conditional_entropy(x, y):
     probability_x = compute_probability(x)
     
