@@ -7,8 +7,6 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
-import matplotlib.pyplot as plt
-from sklearn.metrics import f1_score
 
 # Helper functions
 def get_depth_comparison(X_train, y_train, X_val, y_val):
