@@ -13,7 +13,7 @@ def get_depth_comparison(X_train, y_train, X_val, y_val):
     """
     Compare the performance of Decision Tree Classifier with different ways of handling class imbalance.
     """
-    depths = list(range(1, 50, 5))
+    depths = list(1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
     depths_macro = []
     depths_weighted = []
 
@@ -51,9 +51,9 @@ def get_depth(X_train, y_train, X_val, y_val, imbalance_adjusted):
 
     for depth in depths:
         d_tree = DecisionTreeClassifier(criterion = 'entropy', max_depth=depth, class_weight= None if not imbalance_adjusted else 'balanced')
-        d_tree.fit(X_train_subset, y_train_subset)
-        y_pred = d_tree.predict(X_validation)
-        f1 = f1_score(y_validation, y_pred, average= 'macro' if not imbalance_adjusted else 'weighted')
+        d_tree.fit(X_train, y_train)
+        y_pred = d_tree.predict(X_val)
+        f1 = f1_score(y_val, y_pred, average= 'macro' if not imbalance_adjusted else 'weighted')
         f1_list.append(f1)
     
     # Determine optimal depth
@@ -98,7 +98,9 @@ def train_and_test(X_train, y_train, X_test, y_test, depth, imbalance_adjusted):
     print("Classification report on test set:\n")
     print(classification_report(y_test, test_pred, target_names=['Non-injury', 'Minor', 'Serious', 'Fatal']))
 
-# Read merged csv.
+    return None
+
+# Read merged csv
 merged_df = pd.read_csv('merged_accident.csv')
 
 # Split using stratified sampling
